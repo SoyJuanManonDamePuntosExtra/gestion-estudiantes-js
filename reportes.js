@@ -79,3 +79,44 @@ export const promedioDeCadaMateriaPorArea = () => {
 
     return materiasPorArea;
 };
+
+export const mejoresYPeoresEstudiantesPorArea = (nivel) => {
+    const estudiantesDelArea = promedioPorEstudiante().filter(est => est.área === nivel);
+    if (estudiantesDelArea.length === 0) return { mejores: [], peores: [] };
+
+    estudiantesDelArea.sort((a, b) => b.promedio - a.promedio);
+    return {
+        mejores: estudiantesDelArea.slice(0, 2),
+        peores: estudiantesDelArea.slice(-2)
+    };
+};
+
+export const rankingDeEstudiantesPorPromedio = () => {
+    return promedioPorEstudiante().sort((a, b) => b.promedio - a.promedio);
+};
+
+export const cantidadAprobadosReprobados = () => {
+    return estudiantes.reduce((acc, est) => {
+        const promedio = Object.values(est.calificaciones).reduce((sum, nota) => sum + nota, 0) / Object.keys(est.calificaciones).length;
+        if (promedio >= 60) {
+            acc.aprobados += 1;
+        } else {
+            acc.reprobados += 1;
+        }
+        return acc;
+    }, { aprobados: 0, reprobados: 0 });
+};
+
+export const reporteDeRendimientoAcademico = () => {
+    const totalEstudiantes = estudiantes.length;
+    const promedioGeneralGrupo = promedioGeneralGrupo().promedioGeneral;
+    const mejoresEstudiantes = filtrarEstudiantesPorPromedio(85);
+    const peoresEstudiantes = promedioPorEstudiante().filter(est => est.promedio < 60);
+
+    return {
+        totalEstudiantes,
+        promedioGeneralGrupo,
+        mejoresEstudiantes,
+        peoresEstudiantes
+    };
+};

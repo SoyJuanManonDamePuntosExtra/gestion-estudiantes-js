@@ -1,70 +1,147 @@
-import { crearEstudiante, listarEstudiantes, actualizarEstudiante, eliminarEstudiante } from './estudiantes.js.js';
-import { listarEstudiantesConArea, buscarEstudiante, promedioPorEstudiante } from './reportes.js.js';
 import readline from 'readline';
+import {
+    crearEstudiante, listarEstudiantes, actualizarEstudiante, eliminarEstudiante
+} from './estudiantes.js.js';
+
+import {
+    listarEstudiantesConArea, buscarEstudiante, promedioPorEstudiante, filtrarEstudiantesPorPromedio,
+    estudiantesAprobadosReprobadosPorMateria, promedioGeneralGrupo, promedioPorAreaDeEstudio,
+    distribucionEstudiantesPorArea, promedioDeCadaMateriaPorArea, mejoresYPeoresEstudiantesPorArea,
+    rankingDeEstudiantesPorPromedio, cantidadAprobadosReprobados, reporteDeRendimientoAcademico
+} from './reportes.js.js';
 
 const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
+    input: process.stdin,
+    output: process.stdout
 });
 
-const menu = () => {
-  rl.question(`\n  Bienvenido al Sistema de Gestión de Estudiantes\n  1. Crear Estudiante\n  2. Listar Estudiantes\n  3. Actualizar Estudiante\n  4. Eliminar Estudiante\n  5. Listar Estudiantes con Área\n  6. Buscar Estudiante por ID o Nombre\n  7. Calcular Promedio de Cada Estudiante\n  8. Salir\n  Elige una opción: `, (opcion) => {
-    switch(opcion) {
-      case '1':
-        rl.question('Ingresa el nombre del estudiante: ', (nombre) => {
-          rl.question('Ingresa la edad del estudiante: ', (edad) => {
-            rl.question('Ingresa el nivel del estudiante: ', (nivel) => {
-              crearEstudiante(nombre, parseInt(edad), nivel);
-              menu();
-            });
-          });
-        });
-        break;
-      case '2':
-        listarEstudiantes();
-        menu();
-        break;
-      case '3':
-        rl.question('Ingresa el ID del estudiante a actualizar: ', (id) => {
-          rl.question('Ingresa el nuevo nombre (deja vacío para no cambiar): ', (nuevoNombre) => {
-            rl.question('Ingresa la nueva edad (deja vacío para no cambiar): ', (nuevaEdad) => {
-              rl.question('Ingresa el nuevo nivel (deja vacío para no cambiar): ', (nuevoNivel) => {
-                actualizarEstudiante(parseInt(id), nuevoNombre, nuevaEdad ? parseInt(nuevaEdad) : undefined, nuevoNivel);
-                menu();
-              });
-            });
-          });
-        });
-        break;
-      case '4':
-        rl.question('Ingresa el ID del estudiante a eliminar: ', (id) => {
-          eliminarEstudiante(parseInt(id));
-          menu();
-        });
-        break;
-      case '5':
-        console.log("Listado de estudiantes con área:", listarEstudiantesConArea());
-        menu();
-        break;
-      case '6':
-        rl.question('Ingresa el ID o nombre del estudiante: ', (idONombre) => {
-          console.log("Resultado de la búsqueda:", buscarEstudiante(isNaN(idONombre) ? idONombre : parseInt(idONombre)));
-          menu();
-        });
-        break;
-      case '7':
-        console.log("Promedio de cada estudiante:", promedioPorEstudiante());
-        menu();
-        break;
-      case '8':
-        console.log("¡Hasta luego!");
-        rl.close();
-        break;
-      default:
-        console.log("Opción no válida.");
-        menu();
-    }
-  });
+const mostrarMenu = () => {
+    rl.question(`
+    📚 SISTEMA DE GESTIÓN DE ESTUDIANTES 📚
+    1. Crear Estudiante
+    2. Listar Estudiantes
+    3. Actualizar Estudiante
+    4. Eliminar Estudiante
+    5. Listado de Estudiantes (map)
+    6. Búsqueda de Estudiante por Nombre o ID (find)
+    7. Promedio de Calificaciones por Estudiante (map)
+    8. Listado de Estudiantes con Promedio Mayor a un Umbral (filter)
+    9. Estudiantes Aprobados y Reprobados por Materia (filter)
+    10. Promedio General del Grupo (reduce)
+    11. Promedio General por Área de Estudio (reduce)
+    12. Distribución de Estudiantes por Área (reduce)
+    13. Promedio de Cada Materia por Área de Estudio (map + reduce)
+    14. Mejores y Peores Estudiantes por Área (sort + slice)
+    15. Ranking de Estudiantes por Promedio (sort)
+    16. Cantidad de Aprobados y Reprobados en la Clase (reduce)
+    17. Reporte de Rendimiento Académico
+    18. Salir
+    ➤ Selecciona una opción: `, (opcion) => {
+
+        switch (opcion) {
+            case '1':
+                rl.question('Nombre: ', (nombre) => {
+                    rl.question('Edad: ', (edad) => {
+                        rl.question('Nivel: ', (nivel) => {
+                            crearEstudiante(nombre, parseInt(edad), nivel);
+                            mostrarMenu();
+                        });
+                    });
+                });
+                break;
+            case '2':
+                console.log(listarEstudiantes());
+                mostrarMenu();
+                break;
+            case '3':
+                rl.question('ID del estudiante: ', (id) => {
+                    rl.question('Nuevo nombre: ', (nombre) => {
+                        rl.question('Nueva edad: ', (edad) => {
+                            rl.question('Nuevo nivel: ', (nivel) => {
+                                actualizarEstudiante(parseInt(id), nombre, edad ? parseInt(edad) : undefined, nivel);
+                                mostrarMenu();
+                            });
+                        });
+                    });
+                });
+                break;
+            case '4':
+                rl.question('ID del estudiante: ', (id) => {
+                    eliminarEstudiante(parseInt(id));
+                    mostrarMenu();
+                });
+                break;
+            case '5':
+                console.log(listarEstudiantesConArea());
+                mostrarMenu();
+                break;
+            case '6':
+                rl.question('ID o Nombre del estudiante: ', (input) => {
+                    console.log(buscarEstudiante(isNaN(input) ? input : parseInt(input)));
+                    mostrarMenu();
+                });
+                break;
+            case '7':
+                console.log(promedioPorEstudiante());
+                mostrarMenu();
+                break;
+            case '8':
+                rl.question('Ingrese el umbral de promedio: ', (umbral) => {
+                    console.log(filtrarEstudiantesPorPromedio(parseFloat(umbral)));
+                    mostrarMenu();
+                });
+                break;
+            case '9':
+                rl.question('Ingrese la materia: ', (materia) => {
+                    console.log(estudiantesAprobadosReprobadosPorMateria(materia));
+                    mostrarMenu();
+                });
+                break;
+            case '10':
+                console.log(promedioGeneralGrupo());
+                mostrarMenu();
+                break;
+            case '11':
+                rl.question('Ingrese el área de estudio: ', (nivel) => {
+                    console.log(promedioPorAreaDeEstudio(nivel));
+                    mostrarMenu();
+                });
+                break;
+            case '12':
+                console.log(distribucionEstudiantesPorArea());
+                mostrarMenu();
+                break;
+            case '13':
+                console.log(promedioDeCadaMateriaPorArea());
+                mostrarMenu();
+                break;
+            case '14':
+                rl.question('Ingrese el área de estudio: ', (nivel) => {
+                    console.log(mejoresYPeoresEstudiantesPorArea(nivel));
+                    mostrarMenu();
+                });
+                break;
+            case '15':
+                console.log(rankingDeEstudiantesPorPromedio());
+                mostrarMenu();
+                break;
+            case '16':
+                console.log(cantidadAprobadosReprobados());
+                mostrarMenu();
+                break;
+            case '17':
+                console.log(reporteDeRendimientoAcademico());
+                mostrarMenu();
+                break;
+            case '18':
+                console.log("¡Hasta luego!");
+                rl.close();
+                break;
+            default:
+                console.log("Opción no válida.");
+                mostrarMenu();
+        }
+    });
 };
 
-menu();
+mostrarMenu();
