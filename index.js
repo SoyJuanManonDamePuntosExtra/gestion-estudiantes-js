@@ -1,4 +1,5 @@
-import { crearEstudiante, listarEstudiantes, actualizarEstudiante, eliminarEstudiante } from './estudiantes.js';
+import { crearEstudiante, listarEstudiantes, actualizarEstudiante, eliminarEstudiante } from './estudiantes.js.js';
+import { listarEstudiantesConArea, buscarEstudiante, promedioPorEstudiante } from './reportes.js.js';
 import readline from 'readline';
 
 const rl = readline.createInterface({
@@ -7,14 +8,7 @@ const rl = readline.createInterface({
 });
 
 const menu = () => {
-  rl.question(`
-  Bienvenido al Sistema de Gestión de Estudiantes
-  1. Crear Estudiante
-  2. Listar Estudiantes
-  3. Actualizar Estudiante
-  4. Eliminar Estudiante
-  5. Salir
-  Elige una opción: `, (opcion) => {
+  rl.question(`\n  Bienvenido al Sistema de Gestión de Estudiantes\n  1. Crear Estudiante\n  2. Listar Estudiantes\n  3. Actualizar Estudiante\n  4. Eliminar Estudiante\n  5. Listar Estudiantes con Área\n  6. Buscar Estudiante por ID o Nombre\n  7. Calcular Promedio de Cada Estudiante\n  8. Salir\n  Elige una opción: `, (opcion) => {
     switch(opcion) {
       case '1':
         rl.question('Ingresa el nombre del estudiante: ', (nombre) => {
@@ -49,6 +43,20 @@ const menu = () => {
         });
         break;
       case '5':
+        console.log("Listado de estudiantes con área:", listarEstudiantesConArea());
+        menu();
+        break;
+      case '6':
+        rl.question('Ingresa el ID o nombre del estudiante: ', (idONombre) => {
+          console.log("Resultado de la búsqueda:", buscarEstudiante(isNaN(idONombre) ? idONombre : parseInt(idONombre)));
+          menu();
+        });
+        break;
+      case '7':
+        console.log("Promedio de cada estudiante:", promedioPorEstudiante());
+        menu();
+        break;
+      case '8':
         console.log("¡Hasta luego!");
         rl.close();
         break;
